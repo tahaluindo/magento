@@ -1,0 +1,109 @@
+# Default values for the magento application
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+fpm:
+  image: ghcr.io/ginokok1996/tn-magento-fpm
+  tag: latest
+  replicaCount: 1
+  pullPolicy: Always
+  publicKey: ce7e9740272307af36caad68f054f144
+  privateKey: d4975ceefe2051768b2e01b9796f53a0
+  useRewrites: 0
+  sessionSave: files
+  useSecure: 0
+  useSecureAdmin: 0
+  backendFrontName: xpanel
+  baseUrl: http://test.parts-technative.nl/
+  baseUrlSecure: https://test.parts-technative.nl/
+  twoFactorAuth: 0
+  database:
+    host: new-magento-test.cz4nevwmfgni.eu-central-1.rds.amazonaws.com
+    name: magento2
+    user: magento2
+    password: magento2
+  admin:
+    firstName: admin
+    lastName: admin
+    email: info@technative.nl
+    username: admin
+    password: admin123
+  elasticsearch:
+    host: magento-elasticsearch-master.default.svc.cluster.local
+    port: 9200
+  
+nginx:
+  image: ghcr.io/ginokok1996/tn-magento-nginx
+  tag: latest
+  replicaCount: 1
+  pullPolicy: Always
+  host: localhost
+  upstream: localhost
+
+elasticsearch:
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: magento/magento-cloud-docker-elasticsearch
+    tag: 7.7-1.3.0
+  master:
+    replicas: 1
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+  coordinating:
+    replicas: 1
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+  data:
+    replicas: 1
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+  
+
+mariadb:
+  enabled: false
+  image:
+    pullPolicy: IfNotPresent
+  auth:
+    database: magento2
+    username: magento2
+    password: magento2
+
+redis:
+  cluster:
+    enabled: false
+  redisPort: 6379
+  usePassword: false
+  enabled: false
+  pullPolicy: IfNotPresent
+
+ingress:
+  enabled: true
+  hostname: test.parts-technative.nl
+  path: /
+  annotations:
+      # kubernetes.io/ingress.global-static-ip-name: chart-ip
+      # kubernetes.io/ingress.class: gce
+      # kubernetes.io/tls-acme: "true"
+  tls:
+      # Secrets must be manually created in the namespace, you can also use cert-manager.
+      # - hosts:
+      # - example.com
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi

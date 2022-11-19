@@ -1,0 +1,105 @@
+version: "3.9"
+services:
+  elasticsearch:
+    hostname: elasticsearch.magento2.docker
+    image: 'magento/magento-cloud-docker-elasticsearch:7.7-1.3.0'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+    networks:
+      magento:
+        aliases:
+          - elasticsearch.magento2.docker
+  db:
+    hostname: db.magento2.docker
+    image: 'mariadb:10.3'
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - '3306:3306'
+    volumes:
+      - './app:/app:delegated'
+      - 'magento-db:/var/lib/mysql'
+    healthcheck:
+      test: 'mysqladmin ping -h localhost -pmagento2'
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      magento:
+        aliases:
+          - db.magento2.docker
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: 'always'
+    ports:
+      - 8000:80
+    networks:
+      magento:
+        aliases:
+          - phpmyadmin.magento2.docker   
+  fpm:
+    hostname: fpm.magento2.docker
+    image: ${CONTAINER_REGISTRY_BASE}/tn-magento-fpm:latest
+    build: .
+    environment:
+      - PUBLIC_KEY=${PUBLIC_KEY}
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ADMIN_FIRST_NAME=${ADMIN_FIRST_NAME}
+      - ADMIN_LAST_NAME=${ADMIN_LAST_NAME}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - USE_REWRITES=${USE_REWRITES}
+      - ELASTIC_SEARCH_HOST=${ELASTIC_SEARCH_HOST}
+      - ELASTIC_SEARCH_PORT=${ELASTIC_SEARCH_PORT}
+      - SESSION_SAVE=${SESSION_SAVE}
+      - USE_SECURE=${USE_SECURE}
+      - USE_SECURE_ADMIN=${USE_SECURE_ADMIN}
+      - BACKEND_FRONTNAME=${BACKEND_FRONTNAME}
+      - BASE_URL=${BASE_URL}
+      - BASE_URL_SECURE=${BASE_URL_SECURE}
+      - TWO_FACTOR_AUTH=${TWO_FACTOR_AUTH}
+    volumes: 
+      - './app/pub:/app/pub:rw,delegated' 
+    networks:
+      magento:
+        aliases:
+          - fpm.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    image: ${CONTAINER_REGISTRY_BASE}/tn-magento-nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    ports:
+      - 80:80
+      - 443:443
+    hostname: web.magento2.docker
+    restart: 'always'
+    volumes: 
+      - './app/pub:/app/pub:rw,delegated' 
+    depends_on:
+      - fpm
+    networks:
+      magento:
+        aliases:
+          - web.magento2.docker
+volumes:
+  magento-db: {  }     
+networks:
+  magento:
+    driver: bridge

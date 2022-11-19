@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}
+data:
+  public-key: {{ .Values.fpm.publicKey | quote }}
+  private-key: {{ .Values.fpm.privateKey | quote }}
+  use-rewrites: {{ .Values.fpm.useRewrites | quote }}
+  session-save: {{ .Values.fpm.sessionSave | quote }}
+  use-secure: {{ .Values.fpm.useSecure | quote }}
+  use-secure-admin: {{ .Values.fpm.useSecureAdmin | quote }}
+  backend-frontname: {{ .Values.fpm.backendFrontName | quote }}
+  base-url: {{ .Values.fpm.baseUrl | quote }}
+  base-url-secure: {{ .Values.fpm.baseUrlSecure | quote }}
+  two-factor-auth: {{ .Values.fpm.twoFactorAuth | quote }}
+  database-host: {{ .Values.fpm.database.host | quote }}
+  database-name: {{ .Values.fpm.database.name | quote }}
+  database-user: {{ .Values.fpm.database.user | quote }}
+  database-password: {{ .Values.fpm.database.password | quote }}
+  admin-firstname: {{ .Values.fpm.admin.firstName | quote }}
+  admin-lastname: {{ .Values.fpm.admin.lastName | quote }}
+  admin-email: {{ .Values.fpm.admin.email | quote }}
+  admin-username: {{ .Values.fpm.admin.username | quote }}
+  admin-password: {{ .Values.fpm.admin.password | quote }}
+  elasticsearch-host: {{ .Values.fpm.elasticsearch.host | quote }}
+  elasticsearch-port: {{ .Values.fpm.elasticsearch.port | quote }}
+  nginx-host: {{ .Values.nginx.host | quote }}
+  nginx-upstream: {{ .Values.nginx.upstream | quote }}

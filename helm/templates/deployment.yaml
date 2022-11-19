@@ -1,0 +1,165 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+    helm.sh/chart: {{ include "chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Release.Name }}
+  replicas: {{ .Values.fpm.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Release.Name }}
+        app.kubernetes.io/part-of: {{ .Release.Name }}
+        helm.sh/chart: {{ include "chart" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      volumes:
+        - name: shared-static-data
+          emptyDir: {}
+      containers:
+        - name: {{ .Release.Name }}-fpm
+          volumeMounts:
+          - name: shared-static-data
+            mountPath: /app/pub/static
+          image: "{{ .Values.fpm.image }}:{{ .Values.fpm.tag }}"
+          imagePullPolicy: {{ .Values.fpm.pullPolicy }}
+          ports:
+            - containerPort: 9000
+          env:
+            - name: PUBLIC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: public-key
+            - name: PRIVATE_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: private-key
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: database-host
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: database-name
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: database-user
+            - name: DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: database-password
+            - name: ADMIN_FIRST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: admin-firstname
+            - name: ADMIN_LAST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: admin-lastname
+            - name: ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: admin-email
+            - name: ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: admin-username
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: admin-password
+            - name: USE_REWRITES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: use-rewrites
+            - name: ELASTIC_SEARCH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: elasticsearch-host
+            - name: ELASTIC_SEARCH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: elasticsearch-port
+            - name: SESSION_SAVE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: session-save
+            - name: USE_SECURE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: use-secure
+            - name: USE_SECURE_ADMIN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: use-secure-admin
+            - name: BACKEND_FRONTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: backend-frontname
+            - name: BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: base-url
+            - name: BASE_URL_SECURE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: base-url-secure
+            - name: TWO_FACTOR_AUTH
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: two-factor-auth
+          resources:
+        - name: {{ .Release.Name }}-nginx
+          volumeMounts:
+          - name: shared-static-data
+            mountPath: /app/pub/static
+          image: "{{ .Values.nginx.image }}:{{ .Values.nginx.tag }}"
+          imagePullPolicy: {{ .Values.nginx.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: FPM_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: nginx-host
+            - name: UPSTREAM_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}
+                  key: nginx-upstream
+          resources:

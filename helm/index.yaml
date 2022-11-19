@@ -1,0 +1,123 @@
+apiVersion: v1
+entries:
+  elasticsearch:
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 7.17.1
+    created: "2022-03-24T12:40:37.5741788+01:00"
+    dependencies:
+    - condition: global.kibanaEnabled
+      name: kibana
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Elasticsearch is a distributed search and analytics engine. It is used for web search, log monitoring, and real-time analytics. Ideal for Big Data applications.
+    digest: 1e831bf3bd893d50cd483a02d65b9b8197f0d794b33c853317a6453897e73e7f
+    home: https://github.com/bitnami/charts/tree/master/bitnami/elasticsearch
+    icon: https://bitnami.com/assets/stacks/elasticsearch/img/elasticsearch-stack-220x234.png
+    keywords:
+    - elasticsearch
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: elasticsearch
+    sources:
+    - https://github.com/bitnami/bitnami-docker-elasticsearch
+    - https://www.elastic.co/products/elasticsearch
+    urls:
+    - charts/elasticsearch-17.9.11.tgz
+    version: 17.9.11
+  mariadb:
+  - annotations:
+      category: Database
+    apiVersion: v2
+    appVersion: 10.5.15
+    created: "2022-03-24T12:40:37.5771778+01:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: MariaDB is an open source, community-developed SQL database server that is widely in use around the world due to its enterprise features, flexibility, and collaboration with leading tech firms.
+    digest: 913014ce7061ae985e9848e2177ee73b8b15112c1db2b52a8c60f44e268545ce
+    home: https://github.com/bitnami/charts/tree/master/bitnami/mariadb
+    icon: https://bitnami.com/assets/stacks/mariadb/img/mariadb-stack-220x234.png
+    keywords:
+    - mariadb
+    - mysql
+    - database
+    - sql
+    - prometheus
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: mariadb
+    sources:
+    - https://github.com/bitnami/bitnami-docker-mariadb
+    - https://github.com/prometheus/mysqld_exporter
+    - https://mariadb.org
+    urls:
+    - charts/mariadb-10.4.0.tgz
+    version: 10.4.0
+  redis:
+  - annotations:
+      category: Database
+    apiVersion: v2
+    appVersion: 6.2.6
+    created: "2022-03-24T12:40:37.5821802+01:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Redis(TM) is an open source, advanced key-value store. It is often referred to as a data structure server since keys can contain strings, hashes, lists, sets and sorted sets.
+    digest: 0dbe0e5ec781d72deba7542b573e22ca3709d22162163078b99f8c731f9d7d4c
+    home: https://github.com/bitnami/charts/tree/master/bitnami/redis
+    icon: https://bitnami.com/assets/stacks/redis/img/redis-stack-220x234.png
+    keywords:
+    - redis
+    - keyvalue
+    - database
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    - email: cedric@desaintmartin.fr
+      name: desaintmartin
+    name: redis
+    sources:
+    - https://github.com/bitnami/bitnami-docker-redis
+    urls:
+    - charts/redis-16.5.2.tgz
+    version: 16.5.2
+  technative-magento:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-03-24T12:40:37.5661795+01:00"
+    dependencies:
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.4.0
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.5.2
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.9.11
+    description: A Helm chart for Kubernetes
+    digest: 97fca670d1588da34afa3f85d8d7160769a52ae26ac25aab8751996d3d5ea584
+    name: technative-magento
+    type: application
+    urls:
+    - technative-magento-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-03-24T12:40:37.5491786+01:00"
